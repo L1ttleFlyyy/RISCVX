@@ -21,23 +21,24 @@
 
 
 module DecodingUnit(
-    input IFQ_Instr[31:0],
-    output DU_rs1[4:0],
-    output DU_rs2[4:0],
-    output DU_rd[4:0],
+    input [31:0]IFQ_Instr,
+    output [4:0]DU_rs1,
+    output [4:0]DU_rs2,
+    output [4:0]DU_rd,
     output DU_memread,
     output DU_memwrite,
     output DU_sra_sub,
-    output DU_shamt[4:0],
+    output [4:0]DU_shamt,
     output DU_j,
     output DU_br,
-    output DU_ALUOP[2:0], 
+    output [2:0]DU_ALUOP, 
     output DU_regwrite,
-    output reg DU_imm[31:0]
+    output reg [31:0]DU_imm
     );
 
-    wire opcode[6:0] = IFQ_Instr[6:0];
-    wire funct7[6:0] = IFQ_Instr[31:25];
+    reg raw_regwrite;
+    wire[6:0] opcode = IFQ_Instr[6:0];
+    wire[6:0] funct7 = IFQ_Instr[31:25];
     assign DU_ALUOP[2:0] = IFQ_Instr[14:12];
     assign DU_rd = IFQ_Instr[11:7];
     assign DU_rs1 = IFQ_Instr[19:15];
@@ -48,7 +49,7 @@ module DecodingUnit(
     assign DU_memwrite = opcode == 7'b0100011;
     assign DU_j = opcode == 7'b1101111 || opcode == 7'b1100111;
     assign DU_br = opcode == 7'b1100011;
-    assign DU_regwrite = raw_regwrite && (DU_rd ~= 5'b0);
+    assign DU_regwrite = raw_regwrite && (DU_rd != 5'b0);
 
     always@(*) begin
         raw_regwrite = 0;
@@ -60,17 +61,17 @@ module DecodingUnit(
         end else if (opcode == 7'b1101111) begin
         // J-type jal
             raw_regwrite = 1;
-            DU_imm = {12{IFQ_Instr[31]}, IFQ_Instr[19:12], IFQ_Instr[20], IFQ_Instr[30:25], IFQ_Instr[24:21], 1'b0};
+            DU_imm = {{12{IFQ_Instr[31]}}, IFQ_Instr[19:12], IFQ_Instr[20], IFQ_Instr[30:25], IFQ_Instr[24:21], 1'b0};
         end else if (opcode == 7'b1100011) begin
         // B-type
-            DU_imm = {20{IFQ_Instr[31]}, IFQ_Instr[7], IFQ_Instr[30:25], IFQ_Instr[11:8], 1'b0};
+            DU_imm = {{20{IFQ_Instr[31]}}, IFQ_Instr[7], IFQ_Instr[30:25], IFQ_Instr[11:8], 1'b0};
         end else if (opcode == 7'b0100011) begin
         // S-type
-            DU_imm = {20{IFQ_Instr[31]}, IFQ_Instr[31:25], IFQ_Instr[11:7]};
-        end else if (opcode == 7'0000011 || opcode == 7'b0010011 || opcode == 7'b1100111) begin
+            DU_imm = {{20{IFQ_Instr[31]}}, IFQ_Instr[31:25], IFQ_Instr[11:7]};
+        end else if (opcode == 7'b0000011 || opcode == 7'b0010011 || opcode == 7'b1100111) begin
         // I-type (LW or ADDI or JALR)
             raw_regwrite = 1;
-            DU_imm = {20{IFQ_Instr[31]}, IFQ_Instr[31:20]};
+            DU_imm = {{20{IFQ_Instr[31]}}, IFQ_Instr[31:20]};
         end else if (opcode == 7'b0110011) begin
         // R-type
             raw_regwrite = 1;
