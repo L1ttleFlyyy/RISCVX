@@ -46,9 +46,9 @@ module Adder16(
     wire [3:0] Pm;
     wire [3:1] C;
     Adder4 adder4_0 (A[3:0], B[3:0], CI, Gm[0], Pm[0], S[3:0]);
-    Adder4 adder4_0 (A[7:4], B[7:4], C[1], Gm[1], Pm[1], S[7:4]);
-    Adder4 adder4_0 (A[11:8], B[11:8], C[2], Gm[2], Pm[2], S[11:8]);
-    Adder4 adder4_0 (A[15:12], B[15:12], C[3], Gm[3], Pm[3], S[15:12]);
+    Adder4 adder4_1 (A[7:4], B[7:4], C[1], Gm[1], Pm[1], S[7:4]);
+    Adder4 adder4_2 (A[11:8], B[11:8], C[2], Gm[2], Pm[2], S[11:8]);
+    Adder4 adder4_3 (A[15:12], B[15:12], C[3], Gm[3], Pm[3], S[15:12]);
     CLA4 cla4_0(Pm, Gm, CI, Gmm, Pmm, C);
 
 endmodule
