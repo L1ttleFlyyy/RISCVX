@@ -39,7 +39,7 @@ module DecodingUnit(
     output DU_funct3,
     output DU_Asrc,
     output DU_Bsrc,
-    output [2:0]DU_ALUout,
+    output [2:0]DU_ALUOP,
     output reg [31:0]DU_imm
     );
 
@@ -57,7 +57,7 @@ module DecodingUnit(
     wire L_type = opcode == 7'b0000011;
     wire S_type = opcode == 7'b0100011;
 
-    assign DU_ALUout[2:0] = (I_type || R_type)? funct3 : 3'b0; // used only when R-type and corresponding I-type
+    assign DU_ALUOP[2:0] = (I_type || R_type)? funct3 : 3'b0; // used only when R-type and corresponding I-type
     assign DU_rd = IFQ_Instr[11:7];
     assign DU_rs1 = LUI? 5'b0 : IFQ_Instr[19:15];
     assign DU_rs2 = IFQ_Instr[24:20];
