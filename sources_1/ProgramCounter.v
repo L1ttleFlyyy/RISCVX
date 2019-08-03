@@ -26,6 +26,7 @@ module ProgramCounter(
     input HDU_stall,
     input j_br,
     input [31:0]bta,
+    output [31:0] PC_IF,
     output [31:0] PC_next
     );
 

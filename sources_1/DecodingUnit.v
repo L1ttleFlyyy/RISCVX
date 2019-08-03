@@ -21,7 +21,7 @@
 
 
 module DecodingUnit(
-    input [31:0]IFQ_Instr,
+    input [31:0]Instr_ID,
     output DU_rs1_valid,
     output DU_rs2_valid,
     output [4:0]DU_rs1,
@@ -44,9 +44,9 @@ module DecodingUnit(
     );
 
     reg raw_regwrite;
-    wire[6:0] opcode = IFQ_Instr[6:0];
-    wire[6:0] funct7 = IFQ_Instr[31:25];
-    wire[2:0] funct3 = IFQ_Instr[14:12];
+    wire[6:0] opcode = Instr_ID[6:0];
+    wire[6:0] funct7 = Instr_ID[31:25];
+    wire[2:0] funct3 = Instr_ID[14:12];
     wire LUI = opcode == 7'b0110111;
     wire AUIPC = opcode == 7'b0010111;
     wire JAL = opcode == 7'b1101111;
@@ -58,9 +58,9 @@ module DecodingUnit(
     wire S_type = opcode == 7'b0100011;
 
     assign DU_ALUOP[2:0] = (I_type || R_type)? funct3 : 3'b0; // used only when R-type and corresponding I-type
-    assign DU_rd = IFQ_Instr[11:7];
-    assign DU_rs1 = LUI? 5'b0 : IFQ_Instr[19:15];
-    assign DU_rs2 = IFQ_Instr[24:20];
+    assign DU_rd = Instr_ID[11:7];
+    assign DU_rs1 = LUI? 5'b0 : Instr_ID[19:15];
+    assign DU_rs2 = Instr_ID[24:20];
     assign DU_rs1_valid = ~(LUI || AUIPC || JAL);
     assign DU_rs2_valid = (B_type || S_type || R_type);
     assign DU_sra = funct7 == 7'b0100000;
@@ -78,20 +78,20 @@ module DecodingUnit(
 
     always@(*) begin
         raw_regwrite = 0;
-        DU_imm = {IFQ_Instr[31:12], 12'b0};
+        DU_imm = {Instr_ID[31:12], 12'b0};
         if (LUI || AUIPC) begin // U-type
             raw_regwrite = 1;
-            // DU_imm = {IFQ_Instr[31:12], 12'b0}; default value
+            // DU_imm = {Instr_ID[31:12], 12'b0}; default value
         end else if (JAL) begin // J-type jal
             raw_regwrite = 1;
-            DU_imm = {{12{IFQ_Instr[31]}}, IFQ_Instr[19:12], IFQ_Instr[20], IFQ_Instr[30:25], IFQ_Instr[24:21], 1'b0};
+            DU_imm = {{12{Instr_ID[31]}}, Instr_ID[19:12], Instr_ID[20], Instr_ID[30:25], Instr_ID[24:21], 1'b0};
         end else if (B_type) begin // B-type
-            DU_imm = {{20{IFQ_Instr[31]}}, IFQ_Instr[7], IFQ_Instr[30:25], IFQ_Instr[11:8], 1'b0};
+            DU_imm = {{20{Instr_ID[31]}}, Instr_ID[7], Instr_ID[30:25], Instr_ID[11:8], 1'b0};
         end else if (S_type) begin // S-type
-            DU_imm = {{20{IFQ_Instr[31]}}, IFQ_Instr[31:25], IFQ_Instr[11:7]};
+            DU_imm = {{20{Instr_ID[31]}}, Instr_ID[31:25], Instr_ID[11:7]};
         end else if (L_type || I_type || JALR) begin // I-type (LW or ADDI or JALR)
             raw_regwrite = 1;
-            DU_imm = {{20{IFQ_Instr[31]}}, IFQ_Instr[31:20]};
+            DU_imm = {{20{Instr_ID[31]}}, Instr_ID[31:20]};
         end else if (R_type) begin // R-type
             raw_regwrite = 1;
         end

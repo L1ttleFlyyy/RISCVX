@@ -25,15 +25,18 @@ module RegFile(
     input [4:0] rs1,
     input [4:0] rs2,
     input [4:0] rd,
+    input [4:0] addr_e,
     input regwrite,
     input [31:0] rd_data,
     output [31:0] rs1_data,
-    output [31:0] rs2_data
+    output [31:0] rs2_data,
+    output [31:0] data_e
     );
 
     reg [31:0] regs [1:31];
     assign rs1_data = (rs1 == 5'b0)? 32'b0 : ((rd == rs1) && regwrite) ? rd_data : regs[rs1];
     assign rs2_data = (rs2 == 5'b0)? 32'b0 : ((rd == rs2) && regwrite) ? rd_data : regs[rs2];
+    assign data_e = (addr_e == 5'b0)? 32'b0 : regs[addr_e];
 
     always@(posedge clk) begin
         if (regwrite)
