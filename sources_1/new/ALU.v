@@ -33,6 +33,9 @@ module ALU(
     input sub,
     input jalr,
     output [31:0] BTA,
+    output EQ,
+    output LT,
+    output LTU,
     output reg[31:0] Z
     );
     
