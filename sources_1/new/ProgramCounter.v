@@ -24,14 +24,12 @@ module ProgramCounter(
     input clk,
     input reset,
     input HDU_stall,
-    input br,
+    input j_br,
     input [31:0]bta,
-    input j,
-    input [31:0]ja,
     output [31:0] PC_next
     );
 
-    assign PC_next = j? ja : br? bta : HDU_stall? PC : (PC+4);
+    assign PC_next = j_br? bta : HDU_stall? PC : (PC+4);
 
     reg[31:0] PC;
     always@(posedge clk or posedge reset) begin
