@@ -30,7 +30,7 @@ module ProgramCounter(
     output [31:0] PC_next
     );
 
-    assign PC_next = j_br? bta : stall? PC_IF : (PC_IF+4);
+    assign PC_next = j_br? bta : (stall||reset)? PC_IF : (PC_IF+4);
 
     always@(posedge clk or posedge reset) begin
         if (reset) begin

@@ -25,6 +25,7 @@ module ID_EX_stage(
     input reset,
     input stall,
     input flush,
+    input WBFF,
 
     input memread_ID,
     input memwrite_ID,
@@ -78,40 +79,8 @@ module ID_EX_stage(
             regwrite_EX <= 0;
             j_EX <= 0;
             br_EX <= 0;
-            PC_EX <= {32{1'bx}};
-            rs1_EX <= {5{1'bx}};
-            rs2_EX <= {5{1'bx}};
-            rd_EX <= {5{1'bx}};
-            rs1_data_EX <= {32{1'bx}};
-            rs2_data_EX <= {32{1'bx}};
-            jalr_EX <= 1'bx;
-            sub_EX <= 1'bx;
-            sra_EX <= 1'bx;
-            shdir_EX <= 1'bx;
-            Asrc_EX <= 1'bx;
-            Bsrc_EX <= 1'bx;
-            funct3_EX <= {3{1'bx}};
-            ALUOP_EX <= {3{1'bx}};
-            imm_EX <= {32{1'bx}};
         end else begin
-            if (~stall) begin
-                PC_EX <= PC_ID;
-                rs1_EX <= rs1_ID;
-                rs2_EX <= rs2_ID;
-                rd_EX <= rd_EX;
-                rs1_data_EX <= rs1_data_ID;
-                rs2_data_EX <= rs2_data_ID;
-                jalr_EX <= jalr_ID;
-                sub_EX <= sub_ID;
-                sra_EX <= sra_ID;
-                shdir_EX <= shdir_ID;
-                Asrc_EX <= Asrc_ID;
-                Bsrc_EX <= Bsrc_ID;
-                funct3_EX <= funct3_ID;
-                ALUOP_EX <= ALUOP_ID;
-                imm_EX <= imm_ID;
-            end
-            if (flush) begin
+            if (flush || WBFF) begin
                 memread_EX <= 0;
                 memwrite_EX <= 0;
                 regwrite_EX <= 0;
@@ -128,5 +97,23 @@ module ID_EX_stage(
             end
         end
     end
-
+    always@(posedge clk) begin
+        if (~stall) begin
+            PC_EX <= PC_ID;
+            rs1_EX <= rs1_ID;
+            rs2_EX <= rs2_ID;
+            rd_EX <= rd_ID;
+            rs1_data_EX <= rs1_data_ID;
+            rs2_data_EX <= rs2_data_ID;
+            jalr_EX <= jalr_ID;
+            sub_EX <= sub_ID;
+            sra_EX <= sra_ID;
+            shdir_EX <= shdir_ID;
+            Asrc_EX <= Asrc_ID;
+            Bsrc_EX <= Bsrc_ID;
+            funct3_EX <= funct3_ID;
+            ALUOP_EX <= ALUOP_ID;
+            imm_EX <= imm_ID;
+        end
+    end
 endmodule

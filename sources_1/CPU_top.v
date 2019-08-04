@@ -130,7 +130,7 @@ module CPU_top(
         .clk(clk),
         .rs1(rs1_ID),
         .rs2(rs2_ID),
-        .rd(rd_ID),
+        .rd(rd_WB),
         .addr_e(addr_in[4:0]),
         .regwrite(regwrite_WB),
         .rd_data(rd_data_WB),
@@ -155,6 +155,7 @@ module CPU_top(
     .reset(reset),
     .stall(stall),
     .flush(j_br),
+    .WBFF(WBFF),
 
     .memread_ID(memread_ID),
     .memwrite_ID(memwrite_ID),
