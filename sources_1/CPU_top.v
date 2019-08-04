@@ -278,7 +278,7 @@ module CPU_top(
     .clka(clk),    // input wire clka
     .ena(memread_EX),      // input wire ena
     .wea(mask_EX),      // input wire [3 : 0] wea
-    .addra(ALU_data_EX[31:2]),  // input wire [9 : 0] addra
+    .addra(BTA[31:2]),  // input wire [9 : 0] addra
     .dina(rs2_data_EX),    // input wire [31 : 0] dina
     .douta(mem_data_MEM),  // output wire [31 : 0] douta
     .clkb(clk),    // input wire clkb

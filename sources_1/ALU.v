@@ -53,8 +53,8 @@ module ALU(
     assign Z_slt = LT? 32'b1 : 32'b0;
     assign Z_sltu = LTU? 32'b1 : 32'b0;
     
-    // branch target adder
-    assign A_in_PC = jalr? rs1_data : PC;
+    // branch target adder || mem addr adder
+    assign A_in_PC = (jalr||memread)? rs1_data : PC;
     assign B_in_PC = imm;
     assign BTA = A_in_PC + B_in_PC;
 
