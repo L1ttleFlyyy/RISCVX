@@ -35,16 +35,16 @@ module CPU_top(
     // IF stage signal
     wire [31:0] PC_next, PC_IF, Instr_IF;
     // ID stage signal
-    wire stall, WBFF, rs1_valid, rs2_valid, memread_ID, memwrite_ID, regwrite_ID
+    wire stall, WBFF, rs1_valid, rs2_valid, memread_ID, memwrite_ID, regwrite_ID;
     wire j_ID, br_ID, jalr_ID, sub_ID, sra_ID, shdir_ID, Asrc_ID, Bsrc_ID;
     wire [2:0] funct3_ID, ALUOP_ID;
     wire [4:0] rs1_ID, rs2_ID, rd_ID;
     wire [31:0] PC_ID, Instr_ID, rs1_data_ID, rs2_data_ID, imm_ID;
     // EX stage signal
     wire j_br, memread_EX, memwrite_EX, regwrite_EX, j_EX, br_EX;
-    wire j_EX, br_EX, jalr_EX, sub_EX, sra_EX, shdir_EX, Asrc_EX, Bsrc_EX, EQ, LT, LTU;
+    wire jalr_EX, sub_EX, sra_EX, shdir_EX, Asrc_EX, Bsrc_EX, EQ, LT, LTU;
     wire [2:0] funct3_EX, ALUOP_EX;
-    wire [3:0] mask_EX,
+    wire [3:0] mask_EX;
     wire [4:0] rs1_EX, rs2_EX, rd_EX;
     wire [31:0] PC_EX, rs1_data_EX_raw, rs2_data_EX_raw, rs1_data_EX, rs2_data_EX, imm_EX, BTA, ALU_data_EX;
     // MEM stage signal
@@ -57,6 +57,14 @@ module CPU_top(
     wire regwrite_WB;
     wire [4:0] rd_WB;
     wire [31:0] rd_data_WB;
+
+    // External
+
+    assign I_Cache_wen_e = cmd == 2'b01;
+    assign D_Cache_wen_e = cmd == 2'b11;
+    assign data_out = 
+        (cmd == 2'b00)? reg_data_e :
+        (cmd == 2'b01)? Instr_IF : D_Cache_data_e;
 
     // IF stage
 
@@ -123,7 +131,7 @@ module CPU_top(
         .rs2(rs2_ID),
         .rd(rd_ID),
         .addr_e(addr_in[4:0]),
-        .regwrite_e(regwrite_WB),
+        .regwrite(regwrite_WB),
         .rd_data(rd_data_WB),
         .rs1_data(rs1_data_ID),
         .rs2_data(rs2_data_ID),
@@ -239,7 +247,7 @@ module CPU_top(
     );
 
     LSMask LSMask_0 (
-    .memwrite(memwrite_EX)
+    .memwrite(memwrite_EX),
     .addr(ALU_data_EX[1:0]),
     .funct3(funct3_EX),
     .mask(mask_EX)
@@ -264,8 +272,7 @@ module CPU_top(
 
     // MEM stage
 
-    // note: shadow reg
-    D_Cache D_Cache_0 (
+    D_Cache D_Cache_0 ( // note: shadow reg
     .clka(clk),    // input wire clka
     .ena(memread_EX),      // input wire ena
     .wea(mask_EX),      // input wire [3 : 0] wea
@@ -304,7 +311,5 @@ module CPU_top(
     );
 
     // WB stage
-
-
 
 endmodule

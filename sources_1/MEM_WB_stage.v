@@ -26,7 +26,7 @@ module MEM_WB_stage(
 
     input regwrite_MEM,
     input [4:0] rd_MEM,
-    input [31:0] rd_data_MEM
+    input [31:0] rd_data_MEM,
 
     output reg regwrite_WB,
     output reg [4:0] rd_WB,
