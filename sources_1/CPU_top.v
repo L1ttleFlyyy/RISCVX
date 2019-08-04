@@ -293,7 +293,7 @@ module CPU_top(
     .mem_data_raw(mem_data_raw),
     .addr(ALU_data_MEM[1:0]),
     .funct3(funct3_MEM),
-    .mem_data_MEM(mem_data_MEM)
+    .mem_data(mem_data_MEM)
     );
 
     MEM_WB_stage MEM_WB_stage_0 (

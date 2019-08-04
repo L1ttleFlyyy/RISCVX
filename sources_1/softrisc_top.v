@@ -35,6 +35,8 @@ module softrisc_top(
     );
     wire rst;
     wire clk_1;
+    reg [31:0] addr_in, data_in;
+    reg [1:0] cmd;
     wire [7:0] dataA, dataB;
     wire [3:0] bcdn[0:3];
     assign dataA = sw[7:0];
@@ -42,12 +44,18 @@ module softrisc_top(
     assign led = sw;
     assign rst = ~btnC;
     
+    always@ (posedge clk) begin
+        addr_in <= {24'b0, dataA};
+        data_in <= {26'b0, dataB[5:0]};
+        cmd <= dataB[7:6];
+    end
+
     CPU_top CPU_0(
         .clk(clk),
         .reset(btnC),
-        .addr_in({24'b0, dataA}),
-        .data_in({24'b0, dataB[5:0]}),
-        .cmd(dataB[7:6]),
+        .addr_in(addr_in),
+        .data_in(data_in),
+        .cmd(cmd),
         .data_out({bcdn[3],bcdn[2],bcdn[1],bcdn[0]})
     );
     

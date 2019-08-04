@@ -48,7 +48,7 @@ module ALU(
     assign A_in = Asrc? PC : rs1_data;
     assign B_in = jalr? 32'h4 : Bsrc? imm : rs2_data;
     assign Z_add_sub = sub? (A_in - B_in) : (A_in + B_in);
-    assign Z_shift = shdir? (rs1_data << B_in[4:0]) : sra? ($signed(rs1_data) >>> B_in[4:0]) : (rs1_data >> B_in[4:0]);
+    assign Z_shift = shdir? (rs1_data << B_in[4:0]) : sra? $signed($signed(rs1_data) >>> B_in[4:0]) : (rs1_data >> B_in[4:0]);
     assign Z_and = A_in & B_in;
     assign Z_or = A_in | B_in;
     assign Z_xor = A_in ^ B_in;
