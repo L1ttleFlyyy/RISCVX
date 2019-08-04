@@ -32,6 +32,8 @@ module ALU(
     input shdir,
     input sub,
     input jalr,
+    input memwrite,
+    input memread,
     output [31:0] BTA,
     output EQ,
     output LT,
@@ -54,7 +56,7 @@ module ALU(
     assign Z_sltu = LTU? 32'b1 : 32'b0;
     
     // branch target adder || mem addr adder
-    assign A_in_PC = (jalr||memread)? rs1_data : PC;
+    assign A_in_PC = (jalr||memwrite||memread)? rs1_data : PC;
     assign B_in_PC = imm;
     assign BTA = A_in_PC + B_in_PC;
 

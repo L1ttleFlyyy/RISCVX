@@ -26,11 +26,15 @@ module MEM_WB_stage(
 
     input regwrite_MEM,
     input [4:0] rd_MEM,
-    input [31:0] rd_data_MEM,
+    input memread_MEM,
+    input [31:0] ALU_data_MEM,
+    input [31:0] mem_data_MEM,
 
     output reg regwrite_WB,
     output reg [4:0] rd_WB,
-    output reg [31:0] rd_data_WB
+    output reg memread_WB, 
+    output reg [31:0] mem_data_WB,
+    output reg [31:0] ALU_data_WB
     );
     
     always@(posedge clk or posedge reset) begin
@@ -43,7 +47,9 @@ module MEM_WB_stage(
     
     always@(posedge clk) begin
         rd_WB <= rd_MEM;
-        rd_data_WB <= rd_data_MEM;
+        memread_WB <= memread_MEM;
+        ALU_data_WB <= ALU_data_MEM;
+        mem_data_WB <= mem_data_MEM;
     end
 
 endmodule

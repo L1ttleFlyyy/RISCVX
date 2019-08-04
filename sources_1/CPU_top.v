@@ -51,13 +51,12 @@ module CPU_top(
     // MEM stage signal
     wire memread_MEM, regwrite_MEM;
     wire [2:0] funct3_MEM;
-    wire [3:0] mask_MEM;
     wire [4:0] rd_MEM;
-    wire [31:0] mask_MEM_32, ALU_data_MEM, mem_data_MEM, rd_data_MEM;
+    wire [31:0] mem_data_raw, ALU_data_MEM, mem_data_MEM;
     // WB stage signal
-    wire regwrite_WB;
+    wire regwrite_WB, memread_WB;
     wire [4:0] rd_WB;
-    wire [31:0] rd_data_WB;
+    wire [31:0] mem_data_WB, ALU_data_WB, rd_data_WB;
 
     // External
 
@@ -231,6 +230,8 @@ module CPU_top(
     .shdir(shdir_EX),
     .sub(sub_EX),
     .jalr(jalr_EX),
+    .memwrite(memwrite_EX),
+    .memread(memread_EX),
     .BTA(BTA),
     .EQ(EQ),
     .LT(LT),
@@ -248,9 +249,9 @@ module CPU_top(
     .j_br(j_br)
     );
 
-    LSMask LSMask_0 (
+    StoreMask StoreMask_0 (
     .memwrite(memwrite_EX),
-    .addr(ALU_data_EX[1:0]),
+    .addr(BTA[1:0]),
     .funct3(funct3_EX),
     .mask(mask_EX)
     );
@@ -261,13 +262,13 @@ module CPU_top(
 
     .memread_EX(memread_EX),
     .regwrite_EX(regwrite_EX),
-    .mask_EX(mask_EX),
+    .funct3_EX(funct3_EX),
     .rd_EX(rd_EX),
     .ALU_data_EX(ALU_data_EX),
 
     .memread_MEM(memread_MEM),
     .regwrite_MEM(regwrite_MEM),
-    .mask_MEM(mask_MEM),
+    .funct3_MEM(funct3_MEM),
     .rd_MEM(rd_MEM),
     .ALU_data_MEM(ALU_data_MEM)
     );
@@ -276,11 +277,11 @@ module CPU_top(
 
     D_Cache D_Cache_0 ( // note: shadow reg
     .clka(clk),    // input wire clka
-    .ena(memread_EX),      // input wire ena
+    .ena(memread_EX || memwrite_EX),      // input wire ena
     .wea(mask_EX),      // input wire [3 : 0] wea
     .addra(BTA[31:2]),  // input wire [9 : 0] addra
     .dina(rs2_data_EX),    // input wire [31 : 0] dina
-    .douta(mem_data_MEM),  // output wire [31 : 0] douta
+    .douta(mem_data_raw),  // output wire [31 : 0] douta
     .clkb(clk),    // input wire clkb
     .web(D_Cache_wen_e),      // input wire [3 : 0] web
     .addrb(addr_in[31:2]),  // input wire [9 : 0] addrb
@@ -288,16 +289,12 @@ module CPU_top(
     .doutb(D_Cache_data_e)  // output wire [31 : 0] doutb
     );
 
-
-    assign mask_MEM_32 = 
-        (mask_MEM == 4'b1111)? 32'hFFFFFFFF : 
-        (mask_MEM == 4'b1100)? 32'hFFFF0000 :
-        (mask_MEM == 4'b0011)? 32'h0000FFFF :
-        (mask_MEM == 4'b0001)? 32'h000000FF :
-        (mask_MEM == 4'b0010)? 32'h0000FF00 :
-        (mask_MEM == 4'b0100)? 32'h00FF0000 :
-        (mask_MEM == 4'b1000)? 32'hFF000000 : 32'h0;
-    assign rd_data_MEM = memread_MEM? (mask_MEM_32 & mem_data_MEM) : ALU_data_MEM;
+    LoadMask LoadMask_0 (
+    .mem_data_raw(mem_data_raw),
+    .addr(ALU_data_MEM[1:0]),
+    .funct3(funct3_MEM),
+    .mem_data_MEM(mem_data_MEM)
+    );
 
     MEM_WB_stage MEM_WB_stage_0 (
     .clk(clk),
@@ -305,13 +302,18 @@ module CPU_top(
 
     .regwrite_MEM(regwrite_MEM),
     .rd_MEM(rd_MEM),
-    .rd_data_MEM(rd_data_MEM),
+    .memread_MEM(memread_MEM),
+    .ALU_data_MEM(ALU_data_MEM),
+    .mem_data_MEM(mem_data_MEM),
 
     .regwrite_WB(regwrite_WB),
     .rd_WB(rd_WB),
-    .rd_data_WB(rd_data_WB)
+    .memread_WB(memread_WB),
+    .ALU_data_WB(ALU_data_WB),
+    .mem_data_WB(mem_data_WB)
     );
 
     // WB stage
+    assign rd_data_WB = memread_WB? mem_data_WB : ALU_data_WB;
 
 endmodule

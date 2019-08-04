@@ -5,7 +5,7 @@
 // 
 // Create Date: 07/31/2019 06:32:12 PM
 // Design Name: 
-// Module Name: LSMask
+// Module Name: StoreMask
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module LSMask(
+module StoreMask(
     input memwrite,
     input [1:0] addr,
     input [2:0] funct3,
