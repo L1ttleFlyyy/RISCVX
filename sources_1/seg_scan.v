@@ -22,7 +22,7 @@
 
 module seg_scan(
     input clk,
-    input rst,
+    input reset,
     input [3:0] bcd0,
     input [3:0] bcd1,
     input [3:0] bcd2,
@@ -36,8 +36,8 @@ module seg_scan(
     reg [3:0] bcd_sel;
     reg [1:0] sel;
     
-    always@(posedge clk or negedge rst) begin
-        if(!rst) begin
+    always@(posedge clk or posedge reset) begin
+        if(reset) begin
             sel <= 0;
         end else begin
             if(clk_1k) begin
@@ -71,7 +71,7 @@ module seg_scan(
         .clk_fre(1000)
         ) clock_gen_1k (
         .clk(clk),
-        .rst(rst),
+        .reset(reset),
         .clk_out(clk_1k)
     );
     

@@ -42,17 +42,18 @@ module CPU_top(
     wire [4:0] rs1_ID, rs2_ID, rd_ID;
     wire [31:0] PC_ID, Instr_ID, rs1_data_ID, rs2_data_ID, imm_ID;
     // EX stage signal
-    wire j_br, memread_EX, memwrite_EX, regwrite_EX, j_EX, br_EX;
-    wire jalr_EX, sub_EX, sra_EX, shdir_EX, Asrc_EX, Bsrc_EX, EQ, LT, LTU;
+    wire memread_EX, memwrite_EX, regwrite_EX, j_EX, br_EX;
+    wire jalr_EX, sub_EX, sra_EX, shdir_EX, Asrc_EX, Bsrc_EX, EQ_EX, LT_EX, LTU_EX;
     wire [2:0] funct3_EX, ALUOP_EX;
     wire [3:0] mask_EX;
     wire [4:0] rs1_EX, rs2_EX, rd_EX;
-    wire [31:0] PC_EX, rs1_data_EX_raw, rs2_data_EX_raw, rs1_data_EX, rs2_data_EX, imm_EX, BTA, ALU_data_EX;
+    wire [31:0] PC_EX, rs1_data_EX_raw, rs2_data_EX_raw, rs1_data_EX, rs2_data_EX, imm_EX, BTA_EX, ALU_data_EX;
     // MEM stage signal
-    wire memread_MEM, regwrite_MEM;
+    wire j_br, memread_MEM, regwrite_MEM, j_MEM, br_MEM;
+    wire EQ_MEM, LT_MEM, LTU_MEM;
     wire [2:0] funct3_MEM;
     wire [4:0] rd_MEM;
-    wire [31:0] mem_data_raw, ALU_data_MEM, mem_data_MEM;
+    wire [31:0] mem_data_raw, ALU_data_MEM, mem_data_MEM, BTA_MEM;
     // WB stage signal
     wire regwrite_WB, memread_WB;
     wire [4:0] rd_WB;
@@ -73,7 +74,7 @@ module CPU_top(
     .reset(reset),
     .stall(stall),
     .j_br(j_br),
-    .bta(BTA),
+    .bta(BTA_MEM),
     .PC_IF(PC_IF),
     .PC_next(PC_next)
     );
@@ -232,26 +233,16 @@ module CPU_top(
     .jalr(jalr_EX),
     .memwrite(memwrite_EX),
     .memread(memread_EX),
-    .BTA(BTA),
-    .EQ(EQ),
-    .LT(LT),
-    .LTU(LTU),
+    .BTA(BTA_EX),
+    .EQ(EQ_EX),
+    .LT(LT_EX),
+    .LTU(LTU_EX),
     .Z(ALU_data_EX)
-    );
-
-    BranchUnit BU_0 (
-    .j(j_EX),
-    .br(br_EX),
-    .funct3(funct3_EX),
-    .EQ(EQ),
-    .LT(LT),
-    .LTU(LTU),
-    .j_br(j_br)
     );
 
     StoreMask StoreMask_0 (
     .memwrite(memwrite_EX),
-    .addr(BTA[1:0]),
+    .addr(BTA_EX[1:0]),
     .funct3(funct3_EX),
     .mask(mask_EX)
     );
@@ -259,27 +250,50 @@ module CPU_top(
     EX_MEM_stage EX_MEM_stage_0 (
     .clk(clk),
     .reset(reset),
+    .flush(j_br),
 
     .memread_EX(memread_EX),
     .regwrite_EX(regwrite_EX),
+    .j_EX(j_EX),
+    .br_EX(br_EX),
+    .EQ_EX(EQ_EX),
+    .LT_EX(LT_EX),
+    .LTU_EX(LTU_EX),
     .funct3_EX(funct3_EX),
     .rd_EX(rd_EX),
+    .BTA_EX(BTA_EX),
     .ALU_data_EX(ALU_data_EX),
 
     .memread_MEM(memread_MEM),
     .regwrite_MEM(regwrite_MEM),
+    .j_MEM(j_MEM),
+    .br_MEM(br_MEM),
+    .EQ_MEM(EQ_MEM),
+    .LT_MEM(LT_MEM),
+    .LTU_MEM(LTU_MEM),
     .funct3_MEM(funct3_MEM),
     .rd_MEM(rd_MEM),
+    .BTA_MEM(BTA_MEM),
     .ALU_data_MEM(ALU_data_MEM)
     );
 
     // MEM stage
 
-    D_Cache D_Cache_0 ( // note: shadow reg
+    BranchUnit BU_0 (
+    .j(j_MEM),
+    .br(br_MEM),
+    .funct3(funct3_MEM),
+    .EQ(EQ_MEM),
+    .LT(LT_MEM),
+    .LTU(LTU_MEM),
+    .j_br(j_br)
+    );
+
+    D_Cache D_Cache_0 (
     .clka(clk),    // input wire clka
     .ena(memread_EX || memwrite_EX),      // input wire ena
     .wea(mask_EX),      // input wire [3 : 0] wea
-    .addra(BTA[31:2]),  // input wire [9 : 0] addra
+    .addra(BTA_EX[31:2]),  // input wire [9 : 0] addra
     .dina(rs2_data_EX),    // input wire [31 : 0] dina
     .douta(mem_data_raw),  // output wire [31 : 0] douta
     .clkb(clk),    // input wire clkb
@@ -293,7 +307,7 @@ module CPU_top(
     .mem_data_raw(mem_data_raw),
     .addr(ALU_data_MEM[1:0]),
     .funct3(funct3_MEM),
-    .mem_data_MEM(mem_data_MEM)
+    .mem_data(mem_data_MEM)
     );
 
     MEM_WB_stage MEM_WB_stage_0 (

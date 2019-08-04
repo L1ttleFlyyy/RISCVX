@@ -24,7 +24,7 @@ module clock_gen#(
     parameter clk_fre = 1e3
 ) (
     input clk,
-    input rst,
+    input reset,
     output reg clk_out
 );
 
@@ -33,8 +33,8 @@ module clock_gen#(
     
     reg [width-1:0] counter; 
 
-    always@(posedge clk or negedge rst) begin
-        if(!rst) begin
+    always@(posedge clk or posedge reset) begin
+        if(reset) begin
             clk_out <= 0;
             counter <= 0;
         end else begin
