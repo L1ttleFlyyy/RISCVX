@@ -39,15 +39,19 @@ module EX_MEM_stage(
     
     always@(posedge clk or posedge reset) begin
         if (reset) begin
+            mask_MEM <= 4'b0;
             memread_MEM <= 0;
             regwrite_MEM <= 0;
         end else begin
+            mask_MEM <= mask_EX;
             memread_MEM <= memread_EX;
             regwrite_MEM <= regwrite_EX;
-            mask_MEM <= mask_EX;
-            rd_MEM <= rd_EX;
-            ALU_data_MEM <= ALU_data_EX;
         end
+    end
+    
+    always@(posedge clk) begin
+        rd_MEM <= rd_EX;
+        ALU_data_MEM <= ALU_data_EX;
     end
 
 endmodule

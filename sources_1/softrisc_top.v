@@ -42,11 +42,13 @@ module softrisc_top(
     assign led = sw;
     assign rst = ~btnC;
     
-    Adder32(
-        .A({dataA,dataA,dataA,dataA}),
-        .B({dataB,dataB,dataB,dataB}),
-        .CI(0),
-        .S({bcdn[3],bcdn[2],bcdn[1],bcdn[0]})
+    CPU_top CPU_0(
+        .clk(clk),
+        .reset(btnC),
+        .addr_in({24'b0, dataA}),
+        .data_in({24'b0, dataB[5:0]}),
+        .cmd(dataB[7:6]),
+        .data_out({bcdn[3],bcdn[2],bcdn[1],bcdn[0]})
     );
     
     seg_scan(

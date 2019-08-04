@@ -31,7 +31,8 @@ module CPU_top(
 
     // External signal
     wire [31:0] reg_data_e, D_Cache_data_e;
-    wire I_Cache_wen_e, D_Cache_wen_e;
+    wire I_Cache_wen_e;
+    wire [3:0] D_Cache_wen_e;
     // IF stage signal
     wire [31:0] PC_next, PC_IF, Instr_IF;
     // ID stage signal
@@ -61,7 +62,7 @@ module CPU_top(
     // External
 
     assign I_Cache_wen_e = cmd == 2'b01;
-    assign D_Cache_wen_e = cmd == 2'b11;
+    assign D_Cache_wen_e = (cmd == 2'b11)? 4'b1111 : 4'b0000;
     assign data_out = 
         (cmd == 2'b00)? reg_data_e :
         (cmd == 2'b01)? Instr_IF : D_Cache_data_e;
@@ -187,8 +188,8 @@ module CPU_top(
     .rs1_EX(rs1_EX),
     .rs2_EX(rs2_EX),
     .rd_EX(rd_EX),
-    .rs1_data_EX(rs1_data_EX),
-    .rs2_data_EX(rs2_data_EX),
+    .rs1_data_EX(rs1_data_EX_raw),
+    .rs2_data_EX(rs2_data_EX_raw),
     .jalr_EX(jalr_EX),
     .sub_EX(sub_EX),
     .sra_EX(sra_EX),

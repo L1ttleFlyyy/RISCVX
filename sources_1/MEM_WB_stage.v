@@ -37,10 +37,13 @@ module MEM_WB_stage(
         if (reset) begin
             regwrite_WB <= 0;
         end else begin
-            rd_WB <= rd_MEM;
             regwrite_WB <= regwrite_MEM;
-            rd_data_WB <= rd_data_MEM;
         end
+    end
+    
+    always@(posedge clk) begin
+        rd_WB <= rd_MEM;
+        rd_data_WB <= rd_data_MEM;
     end
 
 endmodule

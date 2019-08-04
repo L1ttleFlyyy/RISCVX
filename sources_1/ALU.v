@@ -40,9 +40,9 @@ module ALU(
     );
     
     wire [31:0] A_in_PC, B_in_PC, A_in, B_in, Z_add_sub, Z_shift, Z_and, Z_or, Z_xor, Z_slt, Z_sltu;
-    wire EQ = A_in == B_in;
-    wire LT = $signed(A_in) <= $signed(B_in);
-    wire LTU = A_in <= B_in;
+    assign EQ = A_in == B_in;
+    assign LT = $signed(A_in) <= $signed(B_in);
+    assign LTU = A_in <= B_in;
     assign A_in = Asrc? PC : rs1_data;
     assign B_in = jalr? 32'h4 : Bsrc? imm : rs2_data;
     assign Z_add_sub = sub? (A_in + B_in) : (A_in - B_in);

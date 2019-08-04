@@ -36,9 +36,9 @@ module DecodingUnit(
     output DU_sub,
     output DU_sra,
     output DU_shdir,
-    output DU_funct3,
     output DU_Asrc,
     output DU_Bsrc,
+    output [2:0]DU_funct3,
     output [2:0]DU_ALUOP,
     output reg [31:0]DU_imm
     );

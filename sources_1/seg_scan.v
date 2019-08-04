@@ -46,7 +46,7 @@ module seg_scan(
         end
     end
     
-    always@(sel)begin
+    always@(*)begin
         case(sel)
             2'h0: begin
                 bcd_sel = bcd0;

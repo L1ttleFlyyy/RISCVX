@@ -1,27 +1,8 @@
-******************************************************************
-*********  Example of Dual Port Block Memory .COE file  **********
-******************************************************************
-; Sample memory initialization file for Dual Port Block Memory,
-; v3.0 or later.
-;
-; This .COE file specifies the contents for a block memory
-; of depth=16, and width=32.  In this case, values are specified
-; in hexadecimal format.
-memory_initialization_radix=16;
+memory_initialization_radix=2;
 memory_initialization_vector=
-1111,
-1111,
-1111,
-1111,
-1111,
-0000,
-0101,
-0011,
-0000,
-1111,
-1111,
-1111,
-1111,
-1111,
-1111,
-1111;
+00000000010100000000000010010011,
+00000000010000000000000100010011,
+00000000000100010000000110110011,
+00000000001100011000000110110011,
+00000000000000000000000001101111
+;

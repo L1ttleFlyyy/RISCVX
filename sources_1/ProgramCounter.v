@@ -26,18 +26,17 @@ module ProgramCounter(
     input stall,
     input j_br,
     input [31:0]bta,
-    output [31:0] PC_IF,
+    output reg [31:0] PC_IF,
     output [31:0] PC_next
     );
 
-    assign PC_next = j_br? bta : stall? PC : (PC+4);
+    assign PC_next = j_br? bta : stall? PC_IF : (PC_IF+4);
 
-    reg[31:0] PC;
     always@(posedge clk or posedge reset) begin
         if (reset) begin
-            PC <= 32'b0;
+            PC_IF <= 32'b0;
         end else begin
-            PC <= PC_next;
+            PC_IF <= PC_next;
         end
     end
 
