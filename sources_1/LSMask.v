@@ -21,6 +21,7 @@
 
 
 module LSMask(
+    input memwrite,
     input [1:0] addr,
     input [2:0] funct3,
     output [3:0] mask
@@ -30,9 +31,9 @@ module LSMask(
     wire [3:0] mask_Half = addr[1]? 4'b1100 : 4'b0011;
     decoder d2_4(.data_in(addr), .data_out(mask_Byte));
 
-    assign mask = 
+    assign mask = memwrite ? (
         (funct3 == 3'b000) ? mask_Byte : //byte
         (funct3 == 3'b001) ? mask_Half : //half
-        4'b1111; // word
+        4'b1111) : 4'b0000; // word
 
 endmodule

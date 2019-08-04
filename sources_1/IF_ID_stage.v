@@ -26,17 +26,20 @@ module IF_ID_stage(
     input stall,
     input flush,
     input [31:0] PC_IF,
+    input [31:0] Instr_IF,
     output reg [31:0] PC_ID,
+    output reg [31:0] Instr_ID,
     output reg WBFF
     );
     
     always@(posedge clk or posedge reset) begin
+        if (~stall) begin
+            PC_ID <= PC_IF;
+            Instr_ID <= Instr_IF;
+        end
         if (reset) begin
             WBFF <= 1;
         end else begin
-            if (~stall) begin
-                PC_ID <= PC_IF;
-            end
             if (flush) begin
                 WBFF <= 1;
             end else begin
