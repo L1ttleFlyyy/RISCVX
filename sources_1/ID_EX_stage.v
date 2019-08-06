@@ -80,20 +80,18 @@ module ID_EX_stage(
             j_EX <= 0;
             br_EX <= 0;
         end else begin
-            if (flush || WBFF) begin
+            if (flush || WBFF || stall) begin
                 memread_EX <= 0;
                 memwrite_EX <= 0;
                 regwrite_EX <= 0;
                 j_EX <= 0;
                 br_EX <= 0;
             end else begin
-                if (~stall) begin
-                    memread_EX <= memread_ID;
-                    memwrite_EX <= memwrite_ID;
-                    regwrite_EX <= regwrite_ID;
-                    j_EX <= j_ID;
-                    br_EX <= br_ID;
-                end
+                memread_EX <= memread_ID;
+                memwrite_EX <= memwrite_ID;
+                regwrite_EX <= regwrite_ID;
+                j_EX <= j_ID;
+                br_EX <= br_ID;
             end
         end
     end

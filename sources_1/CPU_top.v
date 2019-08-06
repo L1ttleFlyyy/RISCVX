@@ -141,7 +141,7 @@ module CPU_top(
 
     HDU HDU_0 (
     .rs1_ID(rs1_ID),
-    .rs2_ID(rs1_ID),
+    .rs2_ID(rs2_ID),
     .rs1_valid(rs1_valid),
     .rs2_valid(rs2_valid),
     .rd_EX(rd_EX),
