@@ -291,7 +291,7 @@ module CPU_top(
 
     D_Cache D_Cache_0 (
     .clka(clk),    // input wire clka
-    .ena(memread_EX || memwrite_EX),      // input wire ena
+    .ena(~j_br && (memread_EX || memwrite_EX)),      // input wire ena
     .wea(mask_EX),      // input wire [3 : 0] wea
     .addra(BTA_EX[31:2]),  // input wire [9 : 0] addra
     .dina(rs2_data_EX),    // input wire [31 : 0] dina
