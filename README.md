@@ -4,6 +4,7 @@
 - 5 stage pipeline with efficient data forwarding
 - Middle branch in EX stage
 - Implementation verified on Basys 3 dev-board (Xilinx Artix-7 FPGA) running at 100MHz
+- Compatible with the popular [RISC-V assembler Jupiter](https://github.com/andrescv/Jupiter)
 ## ISA
 |U-type|J-type|B-type|I-type|S-type|R-type|
 |:---:|:---:|:---:|:---:|:---:|:---:|
